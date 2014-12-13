@@ -7,15 +7,83 @@ import re
 
 from random import choice
 
-from jinchart import barchart, linechart, radarchart, piechart, doughnutchart
+from datetime import date, time, datetime
+
+from jinchart import (barchart, linechart, radarchart,\
+                      piechart, doughnutchart,
+                      turn_to_well_formatted_dict,
+                      turn_to_well_formatted_pie_dict)
 
 class JinChartTest(unittest.TestCase):
 
     def setUp(self):
-        pass
+        raise AssertionError("All the fucking colours  have been severely fucked up - you get random, there's no way to test'em!")
+
 
     def tearDown(self):
         print "bye bye!"
+
+### UNITTESTS FOR GUT-FUNCTIONS ###
+    def test_passing_dict_to_turn_to_well_formatted_dict(self):
+        ''' test that dicts passed to turn_to_well_formatted_dict
+        will be what it shall be
+        '''
+        example = {'mydata':[1,2,3] 'labels':['jan', 'feb', 'mar'], 'options':{'segmentStrokeWidth' : 2}}
+        result = turn_to_well_formatted_dict(example)
+        assert isinstance(result, dict)
+        assert len(result.keys())>=4
+        assert result.has_key('id')
+        assert result['id'] == str(id(example))
+        assert result.has_key('options')
+        assert result['options']['segmentStrokeWidth'] == 2
+        assert len(result['options'].keys()) >=9
+        assert result.has_key('labels')
+        assert result['labels'] == ['jan', 'feb', 'mar']
+        assert result.has_key('mydata')
+        assert result['mydata'] == [1,2,3]
+        raise AssertionError("Not finished!")
+
+    def test_passing_a_list_of_dicts_to_turn_to_well_formatted_dict(self):
+        ''' test that dicts passed to turn_to_well_formatted_dict
+        will be what it shall be
+        '''
+        example = [{'mydata':[1,2,3]} ,{'labels':['jan', 'feb', 'mar']}, {'options':{'segmentStrokeWidth' : 2}}]
+        result = turn_to_well_formatted_dict(example)
+        assert isinstance(result, dict)
+        assert len(result.keys())>=4
+        assert result.has_key('id')
+        assert result['id'] == str(id(example))
+        assert result.has_key('options')
+        assert result['options']['segmentStrokeWidth'] == 2
+        assert len(result['options'].keys()) >=9
+        assert result.has_key('labels')
+        assert result['labels'] == ['jan', 'feb', 'mar']
+        assert result.has_key('mydata')
+        assert result['mydata'] == [1,2,3]
+        raise AssertionError("Not finished!")
+
+    def test_passing_a_list_to_turn_to_well_formatted_dict(self):
+        ''' test that dicts passed to turn_to_well_formatted_dict
+        will be what it shall be
+        '''
+        example = [[1,2,3], ['jan', 'feb', 'mar']]
+        result = turn_to_well_formatted_dict(example)
+        assert isinstance(result, dict)
+        assert len(result.keys())>=4
+        assert result.has_key('id')
+        assert result['id'] == str(id(example))
+        assert result.has_key('options')
+        assert result['options']['segmentStrokeWidth'] == 2
+        assert len(result['options'].keys()) >=9
+        assert result.has_key('labels')
+        assert result['labels'] == ['jan', 'feb', 'mar']
+        assert result.has_key('mydata')
+        assert result['mydata'] == [1,2,3]
+        raise AssertionError("Not finished!")
+
+    def test_turn_to_well_formatted_pie_dict(data):
+        raise AssertionError("Not finished!")
+
 
 ### BARCHART, LINECHART AND RADARCHART #####
 
@@ -870,7 +938,8 @@ class JinChartTest(unittest.TestCase):
         #TODO
         #raise AssertionError("Not finished yet!")
 
-, options        '''When list of labels is shorter use whitespace
+    def test_filling_gaps_in_labels_with_whitespace():
+        '''When list of labels is shorter use whitespace
         rather than truncate '''
         #raise StupidProgrammerError()
 
@@ -965,3 +1034,35 @@ class JinChartTest(unittest.TestCase):
         assert "var chart_"+expected_id_1 in result1
         assert "var chart_"+expected_id_2 in result2
         assert "var chart_"+expected_id_3 in result3
+
+    def test_datetime_objects_as_labels(self):
+        ''' Pass datetime, convert to str and use as labels '''
+
+        dict1 = {"labels":[datetime(2014,10,1,12,0,0), datetime(2014,11,1,12,0,0), datetime(2014,12,1,12,0,0)], "dataset":[1,2,3]}
+        dict2 = [[datetime(2014,10,1,12,0,0), datetime(2014,11,1,12,0,0), datetime(2014,12,1,12,0,0)], [1,2,3]]
+        result1 = barchart(dict1)
+        result2 = barchart(list2)
+        assert 'labels: ["2014-10-01 12:00:00", "2014-11-01 12:00:00", "2014-12-01 12:00:00"]' in result1
+        assert 'labels: ["2014-10-01 12:00:00", "2014-11-01 12:00:00", "2014-12-01 12:00:00"]' in result2
+
+    def test_date_objects_as_labels(self):
+        ''' with barchart and linechart it would be nice to pass date objects as labels'''
+
+        dict1 = {"labels":[date(2014,10,1), date(2014,11,1), date(2014,12,1)], "dataset":[1,2,3]}
+        list2 = [[date(2014,10,1), date(2014,11,1), date(2014,12,1)], [1,2,3]]
+        result1 = barchart(dict1)
+        result2 = barchart(list2)
+        assert 'labels: ["2014-10-01", "2014-11-01", "2014-12-01"]' in result1
+        assert 'labels: ["2014-10-01", "2014-11-01", "2014-12-01"]' in result2
+
+        raise AssertionError("NOT finished")
+
+    def test_time_objects_as_labels(self):
+        ''' with barchart and linechart it would be nice to pass also time objects as labels'''
+
+        dict1 = {"labels":[time(10,0,0), time(11,0,0), time(12,0,0)], "dataset":[1,2,3]}
+        list2 = [[time(10,0,0), time(11,0,0), time(12,0,0)], [1,2,3]]
+        result1 = barchart(dict1)
+        result2 = barchart(list2)
+        assert 'labels: ["10:00:00", "11:00:00", "12:00:00"]' in result1
+        assert 'labels: ["10:00:00", "11:00:00", "12:00:00"]' in result2
